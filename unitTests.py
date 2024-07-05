@@ -4,60 +4,74 @@ import random
 import signal
 from typing import Callable
 
+# time limit for each test case (in seconds)
+TIME_LIMIT = 15
+
+# used to throw Time Limit Exceeded Exceptions
+
+
+class TLE(Exception):
+    def __init__(self):
+        super(TLE, self).__init__()
+
+
+# loading pre-written test cases
 with open("Test_Cases.json", "r") as tst:
-        testCases = json.load(tst)   
+    testCases = json.load(tst)
 tst.close()
 
-freshCase = [random.randint(0,int(1E5)) for _ in range(30)]
-testCases += [["Test Case 8 (Freshly Generated List)",freshCase,sorted(freshCase)]] #??
+# generating a new test case
+freshCase = [random.randint(0, int(1E7)) for _ in range(30)]
+testCases += [["Test Case 9 (Freshly Generated List)",
+               freshCase, sorted(freshCase)]]
 
 
+# used to time code
 def signal_handler(signum, frame):
-    raise Exception("Timed out!")
+    raise TLE
 
-def runTestCases(sorter: Callable) -> None:
-    
+
+def runTestCases(sorter):
     signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(15)
+    signal.alarm(TIME_LIMIT)
 
     try:
         for testCase in testCases:
-            start = time.time() # add time taken
-            print(f'Running {testCase[0]} ...', end ='\r')
-            if testCase[2] == sorter(testCase[1]):
-                print(f'\u2705 \033[1;32m{testCase[0]}\033[0m{' '*100}')
+
+            # getting time elapsed
+            start = time.time()
+            # temporary line
+            print(f'\033[1;33mRunning {testCase[0]} ...\033[0m', end='\r')
+            testObject = sorter(testCase[1])
+            print(' '*50, end='\r')  # erasing the temporary line
+            elapsed = time.time() - start
+
+            # if correct
+            if testCase[2] == testObject.arr:
+                print(f'\u2705 \033[1;32m{testCase[0]}\033[0m')
+                print(formatTime(elapsed)+"\n")
+
+            # if incorrect
             else:
-                print(f'\u274C \033[1;31m{testCase[0]}\033[0m{' '*100}')
-        
-    except Exception:
-        print(f"Timed out!{' '*100}")
+                print(f'\u274C \033[1;31m{testCase[0]}\033[0m')
+                print(f"Expected: {testCase[2]}\nGot: {testObject.arr}\n")
+
+    # time limit exceeded
+    except TLE:
+        print(f"\033[1;31mTimed out!\033[0m{' '*50}")
+
+    # other types of errors:
+    except Exception as e:
+        print(f"\033[1;31mError: {e}\033[0m")
 
 
+def formatTime(elapsed):
+    resFormat = 'Code Executed in: '
 
-    
-    
-    
-
-# for i in range(6):
-#     print(f"Running Test Case 1 {'.'*(i%3+1)}   ",end='\r')
-#     time.sleep(1)
-
-
-def generateTestCases():
-    
-    longList = random.sample(list(range(int(1E5))),int(1E3))
-    largeList = random.sample(list(range(int(1E5),int(1E8),int(1E3))),50)
-    
-    testCases = [
-    ["Test Case 1 (Empty List)", [],[]],
-    ["Test Case 2 (Single Element List)", [1],[1]],
-    ["Test Case 3 (Uniform List)", [0]*100,[0]*100],
-    ["Test Case 4 (Ordered List)", list(range(100)),list(range(100))],
-    ["Test Case 4 (Reversed List)", list(range(100,0,-1)),list(range(1,101))],
-    ["Test Case 5 (Long List)", longList, sorted(longList)],
-    ["Test Case 6 (Large Elements List)", largeList, sorted(largeList)],
-    ["Test Case 7 (Strange Elements List)", [0,-50,1E9,5.55,0b11011000,0o12,0x12], sorted([0,-50,1E9,5.55,0b11011000,0o12,0x12])],
-    ]
-
-    with open("Test_Cases.json","w") as f:
-        json.dump(testCases, f)
+    # formatting the seconds & converting units to be more readable
+    if elapsed < 0.000001:
+        return f'{resFormat}{elapsed*1000000:.3f} Microseconds'
+    elif elapsed < 0.001:
+        return f'{resFormat}{elapsed*1000:.3f} Milliseconds'
+    else:
+        return f'{resFormat}{elapsed:.3f} Seconds'
