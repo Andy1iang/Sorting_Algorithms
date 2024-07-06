@@ -35,16 +35,30 @@ def runTestCases(sorter):
     signal.signal(signal.SIGALRM, signal_handler)
     signal.alarm(TIME_LIMIT)
 
-    try:
-        for testCase in testCases:
+    for testCase in testCases:
 
-            # getting time elapsed
-            start = time.time()
-            # temporary line
-            print(f'\033[1;33mRunning {testCase[0]} ...\033[0m', end='\r')
+        # getting time elapsed
+        start = time.time()
+        # temporary line
+        print(f'\033[1;33mRunning {testCase[0]} ...\033[0m', end='\r')
+        try:
             testObject = sorter(testCase[1])
+
+        # time limit exceeded
+        except TLE:
             print(' '*50, end='\r')  # erasing the temporary line
+            print(f'\u274C \033[1;31m{testCase[0]}\033[0m')
+            print(f"\033[1;31mTimed out!\033[0m{' '*50}\n")
+
+        # other types of errors:
+        except Exception as e:
+            print(' '*50, end='\r')  # erasing the temporary line
+            print(f'\u274C \033[1;31m{testCase[0]}\033[0m')
+            print(f"\033[1;31mError: {e}\033[0m\n")
+
+        else:
             elapsed = time.time() - start
+            print(' '*50, end='\r')  # erasing the temporary line
 
             # if correct
             if testCase[2] == testObject.arr:
@@ -55,14 +69,6 @@ def runTestCases(sorter):
             else:
                 print(f'\u274C \033[1;31m{testCase[0]}\033[0m')
                 print(f"Expected: {testCase[2]}\nGot: {testObject.arr}\n")
-
-    # time limit exceeded
-    except TLE:
-        print(f"\033[1;31mTimed out!\033[0m{' '*50}")
-
-    # other types of errors:
-    except Exception as e:
-        print(f"\033[1;31mError: {e}\033[0m")
 
 
 def formatTime(elapsed):
