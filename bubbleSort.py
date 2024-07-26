@@ -1,5 +1,3 @@
-import UnitTests
-
 # Time Complexity: O(n^2) - average & worst case
 # Space Complexity: O(1)
 # Stable
@@ -7,8 +5,9 @@ import UnitTests
 
 class BubbleSort:
 
-    def __init__(self, arr):
+    def __init__(self, arr, ascending=True):
         self.arr = arr
+        self.ascending = ascending
         self.sort()
 
     def sort(self):
@@ -27,15 +26,18 @@ class BubbleSort:
 
                 # compare two adjacent elements
                 # change > to < to sort in descending order
-                if self.arr[j] > self.arr[j + 1]:
+                if (self.ascending and self.arr[j] > self.arr[j + 1]) or (not self.ascending and self.arr[j] < self.arr[j + 1]):
 
                     # swapping the items
                     self.arr[j], self.arr[j + 1] = self.arr[j + 1], self.arr[j]
                     swapped = True
+                    yield j, j+1  # comment out when unit-testing
 
             # if nothing has been swapping, we can end the program
             if swapped is False:
                 break
 
 
-UnitTests.runTestCases(BubbleSort)
+if __name__ == "__main__":
+    import UnitTests
+    UnitTests.runTestCases(BubbleSort)

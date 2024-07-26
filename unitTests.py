@@ -32,10 +32,12 @@ def signal_handler(signum, frame):
 
 
 def runTestCases(sorter):
-    signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(TIME_LIMIT)
 
     for testCase in testCases:
+
+        # setting up timer
+        signal.signal(signal.SIGALRM, signal_handler)
+        signal.alarm(TIME_LIMIT)
 
         # getting time elapsed
         start = time.time()

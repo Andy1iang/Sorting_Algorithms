@@ -8,7 +8,7 @@ import UnitTests
 
 class BogoSort:
 
-    def __init__(self, arr):
+    def __init__(self, arr, ascending):
         self.arr = arr
         self.sort()
 
@@ -23,6 +23,7 @@ class BogoSort:
     def sort(self):
         while not self.isSorted(self.arr):
             shuffle(self.arr)
+            yield None
 
-
-UnitTests.runTestCases(BogoSort)
+if __name__ == "__main__":
+    UnitTests.runTestCases(BogoSort)
