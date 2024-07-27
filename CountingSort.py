@@ -27,6 +27,11 @@ class CountingSort:
         # accessing the new array and overwriting the original array in sorted order
         c = 0
         for i in range(len(self.counts)):
+
+            # if we want to sort by descending order
+            if not self.ascending:
+                i = len(self.counts) - i - 1
+
             # keeps adding the same elements as needed (overwriting original array)
             while self.counts[i] > 0:
                 self.arr[c] = i + minNum
