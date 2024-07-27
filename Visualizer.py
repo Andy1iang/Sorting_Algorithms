@@ -4,6 +4,7 @@ from BogoSort import BogoSort
 from InsertionSort import InsertionSort
 from CountingSort import CountingSort
 from MiracleSort import MiracleSort
+from SelectionSort import SelectionSort
 
 # importing pygame & other libraries
 import pygame
@@ -129,7 +130,7 @@ def main():
 
     # instantiating screen and sorter
     screen = ScreenInfo(800, 600, generateList(50, 0, 100))
-    sorter = MiracleSort
+    sorter = SelectionSort
     inst = sorter(screen.arr, ascending)
     sorterGen = None
 
