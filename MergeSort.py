@@ -7,8 +7,9 @@ import UnitTests
 
 class MergeSort:
 
-    def __init__(self, arr):
+    def __init__(self, arr, ascending):
         self.arr = self.sort(arr)
+        self.ascending  = ascending
 
     def sort(self, arr):
 
@@ -29,7 +30,7 @@ class MergeSort:
         # merging sorted halves
         i, j, k = 0, 0, 0
         while i < len(left) and j < len(right):
-            if left[i] <= right[j]:
+            if (self.ascending and left[i] <= right[j]) or (self.ascending and left[i] >= right[j]):
                 arr[k] = left[i]
                 i += 1
             else:
