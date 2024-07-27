@@ -7,8 +7,9 @@ import UnitTests
 
 class QuickSort:
 
-    def __init__(self, arr):
+    def __init__(self, arr, ascending):
         self.arr = arr
+        self.ascending = ascending
         self.sort()
 
     def sort(self):
