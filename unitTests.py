@@ -1,3 +1,6 @@
+## TODO:
+## Test for Descending order
+
 import time
 import json
 import random
@@ -44,7 +47,7 @@ def runTestCases(sorter):
         # temporary line
         print(f'\033[1;33mRunning {testCase[0]} ...\033[0m', end='\r')
         try:
-            testObject = sorter(testCase[1])
+            testObject = sorter(testCase[1],True)
 
         # time limit exceeded
         except TLE:

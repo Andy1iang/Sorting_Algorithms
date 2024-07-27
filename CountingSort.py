@@ -9,8 +9,9 @@ import UnitTests
 
 class CountingSort:
 
-    def __init__(self, arr):
+    def __init__(self, arr, ascending):
         self.arr = arr
+        self.ascending = ascending
         if len(arr) > 1:  # only sorting if there's something to sort
             self.counts = [0]*(max(arr)-min(arr)+1)
             self.sort()
@@ -31,6 +32,7 @@ class CountingSort:
                 self.arr[c] = i + minNum
                 c += 1
                 self.counts[i] -= 1
+                yield i, i # comment out when unit testing
 
-
-UnitTests.runTestCases(CountingSort)
+if __name__ == "__main__":
+    UnitTests.runTestCases(CountingSort)

@@ -7,8 +7,9 @@ import UnitTests
 
 class InsertionSort:
 
-    def __init__(self, arr):
+    def __init__(self, arr, ascending):
         self.arr = arr
+        self.ascending = ascending
         self.sort()
 
     def sort(self):
@@ -19,12 +20,15 @@ class InsertionSort:
 
             # keeps shifting items to the right as long as they're larger than the current
             j = i-1
-            while j >= 0 and self.arr[j] > curr:
+            while j >= 0 and ((self.ascending and self.arr[j] > curr) or (not self.ascending and self.arr[j] < curr)):
                 self.arr[j+1] = self.arr[j]
                 j -= 1
+                yield j+1, i
 
             # placing the current element in new location
             self.arr[j+1] = curr
 
+            yield j+1, j # comment out when unit testing
 
-UnitTests.runTestCases(InsertionSort)
+if __name__ == "__main__":
+    UnitTests.runTestCases(InsertionSort)

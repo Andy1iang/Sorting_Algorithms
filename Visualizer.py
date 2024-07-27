@@ -1,6 +1,8 @@
 # importing sorting algorithms
 from BubbleSort import BubbleSort
 from BogoSort import BogoSort
+from InsertionSort import InsertionSort
+from CountingSort import CountingSort
 
 # importing pygame & other libraries
 import pygame
@@ -38,7 +40,7 @@ class ScreenInfo:
     def __init__(self, width, height, arr):
         self.width = width
         self.height = height
-        self.window = pygame.display.set_mode((width, height))
+        self.window = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         pygame.display.set_caption("Sorting Visualizer")
         self.adjustBars(arr)
 
@@ -92,7 +94,7 @@ def drawBars(screen, colorPositions={}, clear=False):
     # if we are only redrawing the bars (when sorting)
     # we clear the bars first
     if clear:
-        clearRect = (screen.SIDE_PADDING//2, screen.TOP_PADDING, screen.width -
+        clearRect = (screen.SIDE_PADDING//2, screen.TOP_PADDING-screen.BAR_OFFSET, screen.width -
                      screen.SIDE_PADDING, screen.height - screen.TOP_PADDING)
         pygame.draw.rect(screen.window, screen.BACKGROUND_COLOR, clearRect)
 
@@ -125,15 +127,15 @@ def main():
     sorting = False
 
     # instantiating screen and sorter
-    screen = ScreenInfo(800, 600, generateList(3, 0, 100))
-    inst = BogoSort(screen.arr, ascending)
+    screen = ScreenInfo(800, 600, generateList(50, 0, 100))
+    inst = CountingSort(screen.arr, ascending)
     sorterGen = None
 
     # updating screen
     draw(screen)
 
     while run:
-        clock.tick(60)  # 60 fps
+        clock.tick(30)  # 60 fps
 
         if sorting:
 
@@ -169,7 +171,7 @@ def main():
 
             # resetting bars and screen & stops sorting
             elif event.key == pygame.K_r:
-                screen = ScreenInfo(800, 600, generateList(3, 0, 100))
+                screen = ScreenInfo(800, 600, generateList(50, 0, 100))
                 inst.arr = screen.arr
                 draw(screen)
                 sorting = False
