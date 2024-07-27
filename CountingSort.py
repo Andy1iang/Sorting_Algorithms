@@ -13,7 +13,7 @@ class CountingSort:
         self.arr = arr
         self.ascending = ascending
         if len(arr) > 1:  # only sorting if there's something to sort
-            self.counts = [0]*(max(arr)-min(arr)+1)
+            self.counts = [0]*((max(arr)-min(arr))+1)
             self.sort()
 
     def sort(self):
@@ -27,6 +27,7 @@ class CountingSort:
         # accessing the new array and overwriting the original array in sorted order
         c = 0
         for i in range(len(self.counts)):
+            b = c # to keep track of the current green for visualizer
 
             # if we want to sort by descending order
             if not self.ascending:
@@ -37,7 +38,7 @@ class CountingSort:
                 self.arr[c] = i + minNum
                 c += 1
                 self.counts[i] -= 1
-                yield i, i # comment out when unit testing
+                yield b, c # comment out when unit testing
 
 if __name__ == "__main__":
     UnitTests.runTestCases(CountingSort)

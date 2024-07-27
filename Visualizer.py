@@ -128,7 +128,8 @@ def main():
 
     # instantiating screen and sorter
     screen = ScreenInfo(800, 600, generateList(50, 0, 100))
-    inst = CountingSort(screen.arr, ascending)
+    sorter = CountingSort
+    inst = sorter(screen.arr, ascending)
     sorterGen = None
 
     # updating screen
@@ -172,7 +173,7 @@ def main():
             # resetting bars and screen & stops sorting
             elif event.key == pygame.K_r:
                 screen = ScreenInfo(800, 600, generateList(50, 0, 100))
-                inst.arr = screen.arr
+                inst = sorter(screen.arr, ascending)
                 draw(screen)
                 sorting = False
 
