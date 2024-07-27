@@ -8,8 +8,8 @@ import UnitTests
 class MergeSort:
 
     def __init__(self, arr, ascending):
-        self.arr = self.sort(arr)
         self.ascending  = ascending
+        self.arr = self.sort(arr)
 
     def sort(self, arr):
 
