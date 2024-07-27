@@ -8,8 +8,9 @@ import UnitTests
 
 class TimSort:
 
-    def __init__(self, arr, threshold=32):
+    def __init__(self, arr, ascending, threshold=32):
         self.threshold = threshold
+        self.ascending = ascending
         self.arr = self.sort(arr)
 
     def _insertionSort(self, arr):
@@ -19,7 +20,7 @@ class TimSort:
 
             # keeps shifting items to the right as long as they're larger than the current
             j = i-1
-            while j >= 0 and arr[j] > curr:
+            while j >= 0 and ((self.ascending and arr[j] > curr) or (not self.ascending and arr[j] < curr)):
                 arr[j+1] = arr[j]
                 j -= 1
 
@@ -47,7 +48,7 @@ class TimSort:
         # merging sorted halves
         i, j, k = 0, 0, 0
         while i < len(left) and j < len(right):
-            if left[i] <= right[j]:
+            if (self.ascending and left[i] <= right[j]) or (not self.ascending and left[i] >= right[j]):
                 arr[k] = left[i]
                 i += 1
             else:
