@@ -47,7 +47,7 @@ def runTestCases(sorter):
         # temporary line
         print(f'\033[1;33mRunning {testCase[0]} ...\033[0m', end='\r')
         try:
-            testObject = sorter(testCase[1],True)
+            testObject = sorter(testCase[1], False)
 
         # time limit exceeded
         except TLE:
