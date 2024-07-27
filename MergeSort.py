@@ -30,7 +30,7 @@ class MergeSort:
         # merging sorted halves
         i, j, k = 0, 0, 0
         while i < len(left) and j < len(right):
-            if (self.ascending and left[i] <= right[j]) or (self.ascending and left[i] >= right[j]):
+            if (self.ascending and left[i] <= right[j]) or (not self.ascending and left[i] >= right[j]):
                 arr[k] = left[i]
                 i += 1
             else:
@@ -50,5 +50,5 @@ class MergeSort:
 
         return arr
 
-
-UnitTests.runTestCases(MergeSort)
+if __name__ == "__main__":
+    UnitTests.runTestCases(MergeSort)

@@ -38,7 +38,7 @@ class QuickSort:
         # where all items to the left are smaller and to the right are larger
         i = low
         for j in range(low, high):
-            if self.arr[j] < pivotValue:
+            if (self.ascending and self.arr[j] < pivotValue) or (not self.ascending and self.arr[j] > pivotValue):
                 self.swap(i, j)
                 i += 1
 
@@ -48,5 +48,5 @@ class QuickSort:
     def swap(self, i, j):
         self.arr[i], self.arr[j] = self.arr[j], self.arr[i]
 
-
-UnitTests.runTestCases(QuickSort)
+if __name__ == "__main__":
+    UnitTests.runTestCases(QuickSort)
