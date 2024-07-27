@@ -68,4 +68,6 @@ class TimSort:
 
         return arr
 
-UnitTests.runTestCases(TimSort)
+
+if __name__ == "__main__":
+    UnitTests.runTestCases(TimSort)
