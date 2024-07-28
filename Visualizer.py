@@ -11,12 +11,14 @@ from ShellSort import ShellSort
 import pygame
 import random
 import math
+import copy
 
 # initializing pygame
 pygame.init()
 
-# class storing screen display information
+
 class ScreenInfo:
+    # class storing screen display information
 
     # color codes
     BLACK = (0, 0, 0)
@@ -28,55 +30,72 @@ class ScreenInfo:
     DARK_GREY = (98, 98, 98)
     BACKGROUND_COLOR = WHITE
 
-    # paddings 
-    SIDE_PADDING = 100
-    TOP_PADDING = 100
+    # paddings
+    SIDE_PADDING_RATIO = 0.125
+    TOP_PADDING_RATIO = 0.125
 
     # offset to make smaller elements appear on screen
-    BAR_OFFSET = 10
+    BAR_OFFSET_RATIO = 0.02
 
-    # font selection and sizing
-    TITLE_FONT = pygame.font.SysFont('Monocraft', 30)
-    FONT = pygame.font.SysFont('Monocraft', 20)
+    # font sizing
+    TITLE_FONT_RATIO = 0.035
+    FONT_RATIO = 0.025
 
     # initializing window
     def __init__(self, width, height, arr):
         self.width = width
         self.height = height
-        self.window = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+        self.sidePadding = math.floor(self.width * self.SIDE_PADDING_RATIO)
+        self.topPadding = math.floor(self.height * self.TOP_PADDING_RATIO)
+        self.barOffset = math.floor(self.height * self.BAR_OFFSET_RATIO)
+
+        # font selection
+        self.titleFont = pygame.font.SysFont(
+            'Monocraft', math.floor(self.height*self.TITLE_FONT_RATIO))
+        self.font = pygame.font.SysFont(
+            'Monocraft', math.floor(self.height*self.FONT_RATIO))
+
+        self.window = pygame.display.set_mode(
+            (self.width, self.height), pygame.RESIZABLE)
         pygame.display.set_caption("Sorting Visualizer")
         self.adjustBars(arr)
 
     # calculating bar height
     def adjustBars(self, arr):
         self.arr = arr
+        self.restoreArr = copy.deepcopy(arr)
         self.minVal = min(arr)
         self.maxVal = max(arr)
-        self.barWidth = math.floor((self.width - self.SIDE_PADDING) / len(arr))
+        self.barWidth = math.floor((self.width - self.sidePadding) / len(arr))
         self.barHeight = math.floor(
-            (self.height-self.TOP_PADDING)/(self.maxVal - self.minVal+1))
-        self.startX = self.SIDE_PADDING // 2
+            (self.height-self.topPadding)/(self.maxVal - self.minVal+1))
+        self.startX = self.sidePadding // 2
 
-# generating a new list to be sorted
+
 def generateList(n, minVal, maxVal):
+    # generating a new list to be sorted
     return [random.randint(minVal, maxVal) for _ in range(n)]
 
-# drawing the sorting screen
+
 def draw(screen):
+    # drawing the sorting screen
 
     # setting background color
     screen.window.fill(screen.BACKGROUND_COLOR)
 
     # loading texts
-    title = screen.TITLE_FONT.render(
+    title = screen.titleFont.render(
         "Sorting Visualizer", 1, screen.BLACK)
-    controls = screen.FONT.render(
+    controls = screen.font.render(
         "R: Reset | Space: Sort | A: Ascending | D: Descending", 1, screen.BLACK)
-    
+
+    # TODO:
+    # Captions Locations Need to be Dynamically set
+
     # displaying texts to screen
     screen.window.blit(
         title, (screen.width//2 - title.get_width()//2, 5))
-    
+
     screen.window.blit(
         controls, (screen.width//2 - controls.get_width()//2, 35))
 
@@ -85,8 +104,9 @@ def draw(screen):
 
     pygame.display.update()
 
-# drawing the bars on the screen
+
 def drawBars(screen, colorPositions={}, clear=False):
+    # drawing the bars on the screen
 
     # colors of the bars
     colors = [screen.LIGHT_GREY, screen.GREY, screen.DARK_GREY]
@@ -97,22 +117,21 @@ def drawBars(screen, colorPositions={}, clear=False):
     # if we are only redrawing the bars (when sorting)
     # we clear the bars first
     if clear:
-        clearRect = (screen.SIDE_PADDING//2, screen.TOP_PADDING-screen.BAR_OFFSET, screen.width -
-                     screen.SIDE_PADDING, screen.height - screen.TOP_PADDING)
+        clearRect = (screen.sidePadding//2, screen.topPadding-screen.barOffset, screen.width -
+                     screen.sidePadding, screen.height - screen.topPadding)
         pygame.draw.rect(screen.window, screen.BACKGROUND_COLOR, clearRect)
 
     # drawing the bars on the screen
     for i, val in enumerate(arr):
 
         x = screen.startX + i * screen.barWidth
-        y = screen.height - ((val - screen.minVal) * screen.barHeight) - screen.BAR_OFFSET
+        y = (screen.height - ((val - screen.minVal)*screen.barHeight)) - screen.barOffset  # ?????
 
         # highlighting the ones we are switching
         color = colors[i % 3]
         if i in colorPositions:
             color = colorPositions[i]
 
-        
         pygame.draw.rect(screen.window, color,
                          (x, y, screen.barWidth, screen.height))
 
@@ -130,8 +149,8 @@ def main():
     sorting = False
 
     # instantiating screen and sorter
-    screen = ScreenInfo(800, 600, generateList(50, 0, 100))
-    sorter = ShellSort
+    screen = ScreenInfo(1280, 800, generateList(50, 0, 100))
+    sorter = BubbleSort
     inst = sorter(screen.arr, ascending)
     sorterGen = None
 
@@ -139,7 +158,7 @@ def main():
     draw(screen)
 
     while run:
-        clock.tick(30)  # 60 fps
+        clock.tick(60)  # 60 fps
 
         if sorting:
 
@@ -151,13 +170,15 @@ def main():
                 # if we have indices to highlight
                 if result:
                     one, two = result
-                    drawBars(screen, {one: screen.GREEN, two: screen.RED}, True)
+                    drawBars(screen, {one: screen.GREEN,
+                             two: screen.RED}, True)
 
                 else:
                     draw(screen)
 
             # when sorting is done
             except StopIteration:
+                screen.restoreArr = copy.deepcopy(screen.arr)
                 sorting = False
                 draw(screen)
 
@@ -169,13 +190,22 @@ def main():
                 run = False
                 sorting = False
 
+            elif event.type == pygame.VIDEORESIZE:
+                # sorting = False
+                screen = ScreenInfo(screen.window.get_width(
+                ), screen.window.get_height(), copy.deepcopy(screen.arr))
+                inst = sorter(screen.arr, ascending)
+                sorterGen = inst.sort()
+                draw(screen)
+
             # if no key is pressed, when move on to the next tick
             elif event.type != pygame.KEYDOWN:
                 continue
 
             # resetting bars and screen & stops sorting
             elif event.key == pygame.K_r:
-                screen = ScreenInfo(800, 600, generateList(50, 0, 100))
+                screen = ScreenInfo(
+                    screen.width, screen.height, generateList(50, 0, 100))
                 inst = sorter(screen.arr, ascending)
                 draw(screen)
                 sorting = False
