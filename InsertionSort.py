@@ -23,12 +23,11 @@ class InsertionSort:
             while j >= 0 and ((self.ascending and self.arr[j] > curr) or (not self.ascending and self.arr[j] < curr)):
                 self.arr[j+1] = self.arr[j]
                 j -= 1
-                yield j+1, i
+                yield j+1, i  # comment out when unit testing
 
             # placing the current element in new location
             self.arr[j+1] = curr
 
-            yield j+1, j # comment out when unit testing
 
 if __name__ == "__main__":
     UnitTests.runTestCases(InsertionSort)

@@ -14,7 +14,7 @@ class ShellSort:
 
     def sort(self):
 
-        # using gaps to shift over large amounts of elements together 
+        # using gaps to shift over large amounts of elements together
         # checking further elements rather than neighboring elements
         gap = len(self.arr) // 2
 
@@ -29,12 +29,10 @@ class ShellSort:
                 while j >= 0 and ((self.ascending and self.arr[j] > curr) or (not self.ascending and self.arr[j] < curr)):
                     self.arr[j+gap] = self.arr[j]
                     j -= gap
-                    yield j+gap, i # comment out when unit testing
+                    yield j+gap, i  # comment out when unit testing
 
                 # placing the current element in new location
                 self.arr[j+gap] = curr
-
-                yield j+gap, j # comment out when unit testing
 
             gap //= 2
 

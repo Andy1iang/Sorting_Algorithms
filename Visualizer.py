@@ -16,13 +16,16 @@ import copy
 # initializing pygame
 pygame.init()
 
+## TODO:
+# Add final check to make sure array is sorted
+
 
 class ScreenInfo:
     # class storing screen display information
 
     # color codes
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
+    BLACK =  (22, 22, 29) 
+    WHITE = (245, 245, 240)
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
     GREY = (128, 128, 128)
@@ -51,9 +54,9 @@ class ScreenInfo:
 
         # font selection
         self.titleFont = pygame.font.SysFont(
-            'Monocraft', math.floor(self.height*self.TITLE_FONT_RATIO))
+            'Courier', math.floor(self.height*self.TITLE_FONT_RATIO))
         self.font = pygame.font.SysFont(
-            'Monocraft', math.floor(self.height*self.FONT_RATIO))
+            'Courier', math.floor(self.height*self.FONT_RATIO))
 
         self.window = pygame.display.set_mode(
             (self.width, self.height), pygame.RESIZABLE)
@@ -70,6 +73,23 @@ class ScreenInfo:
         self.barHeight = math.floor(
             (self.height-self.topPadding)/(self.maxVal - self.minVal+1))
         self.startX = self.sidePadding // 2
+
+
+class Button:
+    def __init__(self, screen, x, y, width, height, image, text=None):
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.image = image
+        self.surface = pygame.image.load(image)
+        self.surface = pygame.transform.smoothscale(self.surface, (width, height))
+        self.text = text
+        self.update()
+        
+    def update(self):
+        self.screen.window.blit(self.surface, (self.x, self.y))
+
+
 
 
 def generateList(n, minVal, maxVal):
@@ -125,7 +145,8 @@ def drawBars(screen, colorPositions={}, clear=False):
     for i, val in enumerate(arr):
 
         x = screen.startX + i * screen.barWidth
-        y = (screen.height - ((val - screen.minVal)*screen.barHeight)) - screen.barOffset  # ?????
+        y = (screen.height - ((val - screen.minVal)*screen.barHeight)) - \
+            screen.barOffset  # ?????
 
         # highlighting the ones we are switching
         color = colors[i % 3]
@@ -140,6 +161,12 @@ def drawBars(screen, colorPositions={}, clear=False):
         pygame.display.update()
 
 
+def drawMoon(screen):
+    sizing = math.floor(screen.width *0.025) 
+    moon = Button(screen, screen.width-50, 20, sizing , sizing, "dark_moon.png")
+    pygame.display.update()
+
+
 def main():
 
     # while-loop variable
@@ -150,17 +177,22 @@ def main():
 
     # instantiating screen and sorter
     screen = ScreenInfo(1280, 800, generateList(50, 0, 100))
-    sorter = BubbleSort
+    sorter = SelectionSort
     inst = sorter(screen.arr, ascending)
     sorterGen = None
 
     # updating screen
     draw(screen)
+    drawMoon(screen)
 
     while run:
         clock.tick(60)  # 60 fps
 
         if sorting:
+
+            if sorter == MiracleSort:
+                pass
+                # add line to print divine intervention
 
             # if sorting is unfinished
             try:
@@ -175,12 +207,14 @@ def main():
 
                 else:
                     draw(screen)
+                    drawMoon(screen)
 
             # when sorting is done
             except StopIteration:
                 screen.restoreArr = copy.deepcopy(screen.arr)
                 sorting = False
                 draw(screen)
+                drawMoon(screen)
 
         # when events are triggered
         for event in pygame.event.get():
@@ -197,6 +231,7 @@ def main():
                 inst = sorter(screen.arr, ascending)
                 sorterGen = inst.sort()
                 draw(screen)
+                drawMoon(screen)
 
             # if no key is pressed, when move on to the next tick
             elif event.type != pygame.KEYDOWN:
@@ -208,6 +243,7 @@ def main():
                     screen.width, screen.height, generateList(50, 0, 100))
                 inst = sorter(screen.arr, ascending)
                 draw(screen)
+                drawMoon(screen)
                 sorting = False
 
             # start sorting
