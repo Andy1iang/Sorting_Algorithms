@@ -40,9 +40,16 @@ class ScreenInfo:
     # font sizing
     TITLE_FONT_RATIO = 0.05
     FONT_RATIO = 0.025
+    SORTERS = {"Bubble Sort": BubbleSort, "Bogo Sort": BogoSort,
+               "Insertion Sort": InsertionSort, "Counting Sort": CountingSort,
+               "Miracle Sort": MiracleSort, "Selection Sort": SelectionSort,
+               "Shell Sort": ShellSort}
+
+    SORT_SELECTIONS = ["Bubble Sort", "Bogo Sort", "Insertion Sort",
+                       "Counting Sort", "Miracle Sort", "Selection Sort", "Shell Sort"]
 
     # initializing window
-    def __init__(self, width, height, arr):
+    def __init__(self, width, height, arr, sorterIdx):
 
         # screen information
         self.width = width
@@ -53,6 +60,8 @@ class ScreenInfo:
             self.height * self.TOP_PADDING_RATIO)  # top padding for bars
         # extra visibility for bars
         self.barOffset = math.floor(self.height * self.BAR_OFFSET_RATIO)
+
+        self.sorterIdx = sorterIdx
 
         # updating font size and selection
         self.titleFont = pygame.font.SysFont(
@@ -80,7 +89,7 @@ class ScreenInfo:
 
 
 class Button:
-    def __init__(self, screen, x, y, width, height, image, text=None):
+    def __init__(self, screen, x, y, width, height, image=None, text=None):
         self.screen = screen
         self.x = x
         self.y = y
@@ -110,7 +119,7 @@ def draw(screen, darkMode, ascending):
     # loading texts
     if darkMode:
         title = screen.titleFont.render(
-            "Sorting Visualizer", True, screen.WHITE)
+            screen.SORT_SELECTIONS[screen.sorterIdx], True, screen.WHITE)
         controls = screen.font.render(
             "R: Reset | Space: Sort | A: Ascending | D: Descending", True, screen.WHITE)
         direction = screen.font.render(
@@ -118,7 +127,7 @@ def draw(screen, darkMode, ascending):
 
     else:
         title = screen.titleFont.render(
-            "Sorting Visualizer", True, screen.BLACK)
+            screen.SORT_SELECTIONS[screen.sorterIdx], True, screen.BLACK)
         controls = screen.font.render(
             "R: Reset | Space: Sort | A: Ascending | D: Descending", True, screen.BLACK)
         direction = screen.font.render(
@@ -202,7 +211,24 @@ def drawMoon(screen, moon, darkMode):
     pygame.display.update()
 
 
-def darkModeDisplay(screen, moon, darkMode, ascending):
+def drawArrows(screen, left, right, darkMode):
+    sizing = math.floor(screen.height * screen.FONT_RATIO)
+    left.x = screen.width * 0.3
+    right.x = screen.width * 0.7
+    left.y = 20
+    right.y = 20
+    left.width = sizing
+    left.height = sizing
+    right.width = sizing
+    right.height = sizing
+    pygame.draw.polygon(screen.window, screen.WHITE if darkMode else screen.BLACK, ((
+        left.x-sizing, left.y+(sizing//2)), (left.x, left.y), (left.x, left.y+sizing)))
+    pygame.draw.polygon(screen.window, screen.WHITE if darkMode else screen.BLACK, ((
+        right.x, right.y), (right.x+sizing, right.y+(sizing//2)), (right.x, right.y+sizing)))
+    pygame.display.update()
+
+
+def darkModeDisplay(screen, moon, left, right, darkMode, ascending):
     if darkMode:
         screen.BACKGROUND_COLOR = screen.BLACK
 
@@ -211,6 +237,7 @@ def darkModeDisplay(screen, moon, darkMode, ascending):
 
     draw(screen, darkMode, ascending)
     drawMoon(screen, moon, darkMode)
+    drawArrows(screen, left, right, darkMode)
 
 
 def main():
@@ -224,17 +251,20 @@ def main():
     checked = False
 
     # instantiating screen and sorter
-    screen = ScreenInfo(1280, 800, generateList(50, 0, 100))
-    sorter = BubbleSort
+    screen = ScreenInfo(1280, 800, generateList(50, 0, 100), 0)
+    sorter = screen.SORTERS[screen.SORT_SELECTIONS[screen.sorterIdx]]
     inst = sorter(screen.arr, ascending)
     sorterGen = None
 
     # instantiating buttons
     moon = Button(screen, 0, 0, 0, 0, 'dark_moon.png')
+    leftArrow = Button(screen, 0, 0, 0, 0,)
+    rightArrow = Button(screen, 0, 0, 0, 0,)
 
     # updating screen
     draw(screen, darkMode, ascending)
     drawMoon(screen, moon, darkMode)
+    drawArrows(screen, leftArrow, rightArrow, darkMode)
 
     while run:
         clock.tick(60)  # 60 fps
@@ -253,8 +283,9 @@ def main():
                              two: screen.RED}, True)
 
                 else:
-                    draw(screen, darkMode, ascending)
-                    drawMoon(screen, moon)
+                    # draw(screen, darkMode, ascending)
+                    # drawMoon(screen, moon, darkMode)
+                    drawBars(screen, {}, True)
 
             # when sorting is done
             except StopIteration:
@@ -274,8 +305,8 @@ def main():
                 except StopIteration:
                     sorting = False
                     checked = False
-                    draw(screen, darkMode, ascending)
-                    drawMoon(screen, moon, darkMode)
+                    darkModeDisplay(screen, moon, leftArrow,
+                                    rightArrow, darkMode, ascending)
 
         # when events are triggered
         for event in pygame.event.get():
@@ -288,15 +319,33 @@ def main():
 
             elif event.type == pygame.VIDEORESIZE:
                 screen = ScreenInfo(screen.window.get_width(
-                ), screen.window.get_height(), copy.deepcopy(screen.arr))
+                ), screen.window.get_height(), copy.deepcopy(screen.arr), screen.sorterIdx)
                 inst = sorter(screen.arr, ascending)
                 sorterGen = inst.sort()
-                darkModeDisplay(screen, moon, darkMode, ascending)
+                darkModeDisplay(screen, moon, leftArrow,
+                                rightArrow, darkMode, ascending)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if moon.surface.get_rect().move(moon.x, moon.y).collidepoint(event.pos):
                     darkMode = not darkMode
-                    darkModeDisplay(screen, moon, darkMode, ascending)
+                    darkModeDisplay(screen, moon, leftArrow,
+                                    rightArrow, darkMode, ascending)
+                    
+                elif not sorting and leftArrow.x-leftArrow.width <= event.pos[0] <= leftArrow.x and leftArrow.y <= event.pos[1] <= leftArrow.y+leftArrow.height:
+                    screen.sorterIdx = (screen.sorterIdx -
+                                        1) % len(screen.SORT_SELECTIONS)
+                    sorter = screen.SORTERS[screen.SORT_SELECTIONS[screen.sorterIdx]]
+                    inst = sorter(screen.arr, ascending)
+                    darkModeDisplay(screen, moon, leftArrow,
+                                    rightArrow, darkMode, ascending)
+                    
+                elif not sorting and rightArrow.x <= event.pos[0] <= rightArrow.x+rightArrow.width and rightArrow.y <= event.pos[1] <= rightArrow.y+rightArrow.height:
+                    screen.sorterIdx = (screen.sorterIdx +
+                                        1) % len(screen.SORT_SELECTIONS)
+                    sorter = screen.SORTERS[screen.SORT_SELECTIONS[screen.sorterIdx]]
+                    inst = sorter(screen.arr, ascending)
+                    darkModeDisplay(screen, moon, leftArrow,
+                                    rightArrow, darkMode, ascending)
 
             # if no key is pressed, when move on to the next tick
             elif event.type != pygame.KEYDOWN:
@@ -304,11 +353,13 @@ def main():
 
             # resetting bars and screen & stops sorting
             elif event.key == pygame.K_r:
-                screen = ScreenInfo(
-                    screen.width, screen.height, generateList(50, 0, 100))
-                darkModeDisplay(screen, moon, darkMode, ascending)
-                inst = sorter(screen.arr, ascending)
                 sorting = False
+                screen = ScreenInfo(screen.window.get_width(
+                ), screen.window.get_height(), generateList(50, 0, 100), screen.sorterIdx)
+                inst = sorter(screen.arr, ascending)
+                sorterGen = inst.sort()
+                darkModeDisplay(screen, moon, leftArrow,
+                                rightArrow, darkMode, ascending)
 
             # start sorting
             elif event.key == pygame.K_SPACE and not sorting:
@@ -318,12 +369,30 @@ def main():
             elif event.key == pygame.K_a and not sorting:
                 inst.ascending = True
                 ascending = True
-                darkModeDisplay(screen, moon, darkMode, ascending)
+                darkModeDisplay(screen, moon, leftArrow,
+                                rightArrow, darkMode, ascending)
 
             elif event.key == pygame.K_d and not sorting:
                 inst.ascending = False
                 ascending = False
-                darkModeDisplay(screen, moon, darkMode, ascending)
+                darkModeDisplay(screen, moon, leftArrow,
+                                rightArrow, darkMode, ascending)
+
+            elif event.key == pygame.K_RIGHT and not sorting:
+                screen.sorterIdx = (screen.sorterIdx +
+                                    1) % len(screen.SORT_SELECTIONS)
+                sorter = screen.SORTERS[screen.SORT_SELECTIONS[screen.sorterIdx]]
+                inst = sorter(screen.arr, ascending)
+                darkModeDisplay(screen, moon, leftArrow,
+                                rightArrow, darkMode, ascending)
+
+            elif event.key == pygame.K_LEFT and not sorting:
+                screen.sorterIdx = (screen.sorterIdx -
+                                    1) % len(screen.SORT_SELECTIONS)
+                sorter = screen.SORTERS[screen.SORT_SELECTIONS[screen.sorterIdx]]
+                inst = sorter(screen.arr, ascending)
+                darkModeDisplay(screen, moon, leftArrow,
+                                rightArrow, darkMode, ascending)
 
     # quit game when loop is over (when quit is pressed)
     pygame.quit()
