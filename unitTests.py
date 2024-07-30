@@ -26,7 +26,7 @@ tst.close()
 
 # generating a new test case
 freshCase = [random.randint(0, int(1e7)) for _ in range(30)]
-testCases += [["Test Case 9 (Freshly Generated List)", freshCase, sorted(freshCase)]]
+testCases += [["Test Case 9 (Freshly Generated List)", freshCase, sorted(freshCase), sorted(freshCase, reverse=True)]]
 
 
 # used to time code
@@ -86,20 +86,16 @@ def runTestCases(sorter):
             descendingResult = checkSort(descendingArr, False)
             if not ascendingResult and not descendingResult:
                 print(f"\u274C \033[1;31m{testCase[0]} - Both Cases Failed\033[0m")
-                print(
-                    f"Ascending - Expected: {testCase[2]}\nGot: {ascendingArr}\n"
-                )
-                # need to implement: print(f"Descending - Expected: {testCase[3]}\nGot: {descendingArr}\n")
+                print(f"Ascending - Expected: {testCase[2]}\nGot: {ascendingArr}\n")
+                print(f"Descending - Expected: {testCase[3]}\nGot: {descendingArr}\n")
 
             elif not ascendingResult:
                 print(f"\u274C \033[1;31m{testCase[0]} - Ascending Case Failed\033[0m")
-                print(
-                    f"Ascending - Expected: {testCase[2]}\nGot: {ascendingArr}\n"
-                )
+                print(f"Ascending - Expected: {testCase[2]}\nGot: {ascendingArr}\n")
 
             elif not descendingResult:
                 print(f"\u274C \033[1;31m{testCase[0]} - Descending Case Failed\033[0m")
-                # need to implement print(f"Descending - Expected: {testCase[3]}\nGot: {descendingArr}\n")
+                print(f"Descending - Expected: {testCase[3]}\nGot: {descendingArr}\n")
 
             else:
                 print(f"\u2705 \033[1;32m{testCase[0]} - Both Cases Passed\033[0m")
