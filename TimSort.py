@@ -1,5 +1,3 @@
-import UnitTests
-
 # Combines Merge Sort with Insertion Sort
 # Time Complexity: O(nlogn)
 # Space Complexity: O(n)
@@ -70,4 +68,5 @@ class TimSort:
 
 
 if __name__ == "__main__":
+    import UnitTests
     UnitTests.runTestCases(TimSort)

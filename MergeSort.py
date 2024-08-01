@@ -1,5 +1,3 @@
-import UnitTests
-
 # Time Complexity: O(nlogn)
 # Space Complexity: O(n)
 # Stable
@@ -51,4 +49,5 @@ class MergeSort:
         return arr
 
 if __name__ == "__main__":
+    import UnitTests
     UnitTests.runTestCases(MergeSort)

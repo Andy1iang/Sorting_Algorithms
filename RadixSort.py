@@ -1,5 +1,3 @@
-import UnitTests
-
 # Integer only (Can be edited to handle ASCII) - Test 8 Not Excepted to Work
 # Time Complexity: O(n*d)
 # d is the amount of digits in the largest number
@@ -45,4 +43,5 @@ class RadixSort:
 
 
 if __name__ == "__main__":
+    import UnitTests
     UnitTests.runTestCases(RadixSort)

@@ -1,5 +1,3 @@
-import UnitTests
-
 # Time Complexity: O(nlogn) - Worst Case: O(n^2)
 # Space Complexity: O(1)
 # Not Stable
@@ -49,4 +47,5 @@ class QuickSort:
         self.arr[i], self.arr[j] = self.arr[j], self.arr[i]
 
 if __name__ == "__main__":
+    import UnitTests
     UnitTests.runTestCases(QuickSort)
